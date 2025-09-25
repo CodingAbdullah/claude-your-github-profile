@@ -46,9 +46,6 @@ export default function ProfilePage({ params }: Props) {
               <h2 className="text-lg sm:text-xl lg:text-2xl font-mono font-bold text-foreground break-words">
                 Profile: <span className="text-primary">{username}</span>
               </h2>
-              <div className="text-muted-foreground font-mono text-xs sm:text-sm mt-2">
-                Loading GitHub data...
-              </div>
             </CardContent>
           </Card>
         </div>
@@ -74,13 +71,6 @@ export default function ProfilePage({ params }: Props) {
                   className="text-primary hover:text-foreground transition-colors"
                 >
                   New Search
-                </Link>
-                <span className="text-muted-foreground">•</span>
-                <Link
-                  href="/"
-                  className="text-primary hover:text-foreground transition-colors"
-                >
-                  Home
                 </Link>
               </div>
             </CardContent>

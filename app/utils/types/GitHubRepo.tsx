@@ -6,6 +6,8 @@ export default interface GitHubRepo {
     stargazers_count: number
     forks_count: number
     language: string
+    languages?: string[]
+    languagesWithPercentages?: string
     updated_at: string
     html_url: string
     owner: {

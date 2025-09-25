@@ -1,10 +1,24 @@
+import { useState } from 'react'
 import Image from 'next/image'
 import GitHubUser from '../utils/types/GitHubUser'
 
 // Profile Custom Component
 export default function Profile({ user }: { user: GitHubUser }) {
+  const [isExpanded, setIsExpanded] = useState(true)
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+    <div>
+      <div className="flex justify-center items-center mb-3 sm:mb-4">
+        <h3 className="text-base sm:text-lg matrix-text text-center">[PROFILE]</h3>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="ml-3 text-xs font-mono border border-primary px-2 py-1 hover:bg-primary hover:text-white transition-colors"
+        >
+          [{isExpanded ? 'COLLAPSE' : 'EXPAND'}]
+        </button>
+      </div>
+      {isExpanded && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
       <div className="bg-card border border-border rounded-lg p-4 sm:p-6">
         <div className="text-center">
           <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-3 sm:mb-4 border-2 border-primary rounded-lg overflow-hidden">
@@ -29,8 +43,8 @@ export default function Profile({ user }: { user: GitHubUser }) {
           <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">BIO:</span> <span className="text-foreground text-center flex-1 break-words px-2">{user.bio || 'N/A'}</span></div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">LOCATION:</span> <span className="text-foreground text-center flex-1 break-words px-2">{user.location || 'Unknown'}</span></div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">COMPANY:</span> <span className="text-foreground text-center flex-1 break-words px-2">{user.company || 'N/A'}</span></div>
-          <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">WEBSITE:</span> <span className="text-foreground text-center flex-1 break-words px-2">{user.blog || 'N/A'}</span></div>
-          <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">TWITTER:</span> <span className="text-foreground text-center flex-1 break-words px-2">{user.twitter_username ? `@${user.twitter_username}` : 'N/A'}</span></div>
+          <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">WEBSITE:</span> <span className="text-foreground text-center flex-1 break-words px-2">{user.blog ? <a href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{color: 'var(--accent)'}}>{user.blog}</a> : 'N/A'}</span></div>
+          <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">TWITTER:</span> <span className="text-foreground text-center flex-1 break-words px-2">{user.twitter_username ? <a href={`https://twitter.com/${user.twitter_username}`} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{color: 'var(--accent)'}}>@{user.twitter_username}</a> : 'N/A'}</span></div>
           <div className="flex flex-col sm:flex-row sm:justify-center items-center"><span className="text-primary w-full sm:w-24 text-center mb-1 sm:mb-0">JOINED:</span> <span className="text-foreground text-center flex-1 break-words px-2">{new Date(user.created_at).toLocaleDateString()}</span></div>
         </div>
 
@@ -53,6 +67,8 @@ export default function Profile({ user }: { user: GitHubUser }) {
           </div>
         </div>
       </div>
+        </div>
+      )}
     </div>
   )
 }

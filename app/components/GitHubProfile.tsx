@@ -10,6 +10,19 @@ import Repositories from './Repositories'
 import Gists from './Gists'
 import StarredRepos from './StarredRepos'
 
+// Helper function to calculate language percentages
+const calculateLanguagePercentages = (languages: Record<string, number>): string => {
+  const entries = Object.entries(languages)
+  const totalBytes = entries.reduce((sum, [, bytes]) => sum + bytes, 0)
+
+  return entries
+    .map(([lang, bytes]) => {
+      const percentage = ((bytes / totalBytes) * 100).toFixed(1)
+      return `${lang} ${percentage}%`
+    })
+    .join(', ')
+}
+
 // Custom GitHub Profile Component
 export default function GitHubProfile({ username }: Props) {
   const [user, setUser] = useState<GitHubUser | null>(null)
@@ -30,9 +43,9 @@ export default function GitHubProfile({ username }: Props) {
     try {
       const [userRes, reposRes, gistsRes, starredRes] = await Promise.all([
         fetch(`/api/github/users/${username}`),
-        fetch(`/api/github/users/${username}/repos?per_page=10&sort=updated`),
-        fetch(`/api/github/users/${username}/gists?per_page=5`),
-        fetch(`/api/github/users/${username}/starred?per_page=5&sort=created`)
+        fetch(`/api/github/users/${username}/repos?per_page=100&sort=updated`),
+        fetch(`/api/github/users/${username}/gists?per_page=100`),
+        fetch(`/api/github/users/${username}/starred?per_page=100&sort=created`)
       ])
 
       if (!userRes.ok) {
@@ -53,10 +66,60 @@ export default function GitHubProfile({ username }: Props) {
       const gistsData = gistsRes.ok ? await gistsRes.json() : []
       const starredData = starredRes.ok ? await starredRes.json() : []
 
+      // Fetch languages for each repository
+      const reposWithLanguages = await Promise.all(
+        reposData.map(async (repo: any) => {
+          try {
+            const langRes = await fetch(`/api/github/repos/${repo.owner.login}/${repo.name}/languages`)
+            if (langRes.ok) {
+              const languages = await langRes.json()
+              if (Object.keys(languages).length > 0) {
+                const percentages = calculateLanguagePercentages(languages)
+                console.log(`Repo languages for ${repo.name}:`, languages, 'Percentages:', percentages)
+                return {
+                  ...repo,
+                  languages: Object.keys(languages),
+                  languagesWithPercentages: percentages
+                }
+              }
+            }
+          } 
+          catch (error) {
+            console.log(`Failed to fetch languages for ${repo.name}:`, error)
+          }
+          return repo
+        })
+      )
+
+      // Fetch languages for starred repositories
+      const starredWithLanguages = await Promise.all(
+        starredData.map(async (repo: any) => {
+          try {
+            const langRes = await fetch(`/api/github/repos/${repo.owner.login}/${repo.name}/languages`)
+            if (langRes.ok) {
+              const languages = await langRes.json()
+              if (Object.keys(languages).length > 0) {
+                const percentages = calculateLanguagePercentages(languages)
+                console.log(`Starred languages for ${repo.name}:`, languages, 'Percentages:', percentages)
+                return {
+                  ...repo,
+                  languages: Object.keys(languages),
+                  languagesWithPercentages: percentages
+                }
+              }
+            }
+          } 
+          catch (error) {
+            console.log(`Failed to fetch languages for ${repo.name}:`, error)
+          }
+          return repo
+        })
+      )
+
       setUser(userData)
-      setRepos(reposData)
+      setRepos(reposWithLanguages)
       setGists(gistsData)
-      setStarred(starredData)
+      setStarred(starredWithLanguages)
     }
     catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -87,8 +150,8 @@ export default function GitHubProfile({ username }: Props) {
     <div className="space-y-8">
       <Profile user={user} />
       <Repositories repos={repos} />
-      <Gists gists={gists} />
       <StarredRepos starred={starred} />
+      <Gists gists={gists} />
     </div>
   )
 }

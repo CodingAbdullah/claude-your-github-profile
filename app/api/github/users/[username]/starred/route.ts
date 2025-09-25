@@ -7,7 +7,7 @@ export async function GET(
   const { username } = await params
   const { searchParams } = new URL(request.url)
   const sort = searchParams.get('sort') || 'created'
-  const per_page = searchParams.get('per_page') || '30'
+  const per_page = searchParams.get('per_page') || '100'
 
   if (!username) {
     return NextResponse.json({ error: 'Username is required' }, { status: 400 })
