@@ -5,10 +5,16 @@ import GitHubUser from '../utils/types/GitHubUser'
 import Props from '../utils/types/Props'
 import GitHubRepo from '../utils/types/GitHubRepo'
 import GitHubGist from '../utils/types/GitHubGist'
+import GitHubFollower from '../utils/types/GitHubFollower'
+import GitHubOrganization from '../utils/types/GitHubOrganization'
+import GitHubEvent from '../utils/types/GitHubEvent'
 import Profile from './Profile'
 import Repositories from './Repositories'
 import Gists from './Gists'
 import StarredRepos from './StarredRepos'
+import Followers from './Followers'
+import Organizations from './Organizations'
+import ContributionGraph from './ContributionGraph'
 
 // Helper function to calculate language percentages
 const calculateLanguagePercentages = (languages: Record<string, number>): string => {
@@ -29,6 +35,10 @@ export default function GitHubProfile({ username }: Props) {
   const [repos, setRepos] = useState<GitHubRepo[]>([])
   const [gists, setGists] = useState<GitHubGist[]>([])
   const [starred, setStarred] = useState<GitHubRepo[]>([])
+  const [followers, setFollowers] = useState<GitHubFollower[]>([])
+  const [following, setFollowing] = useState<GitHubFollower[]>([])
+  const [orgs, setOrgs] = useState<GitHubOrganization[]>([])
+  const [events, setEvents] = useState<GitHubEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -41,11 +51,15 @@ export default function GitHubProfile({ username }: Props) {
     setError(null)
 
     try {
-      const [userRes, reposRes, gistsRes, starredRes] = await Promise.all([
+      const [userRes, reposRes, gistsRes, starredRes, followersRes, followingRes, orgsRes, eventsRes] = await Promise.all([
         fetch(`/api/github/users/${username}`),
         fetch(`/api/github/users/${username}/repos?per_page=100&sort=updated`),
         fetch(`/api/github/users/${username}/gists?per_page=100`),
-        fetch(`/api/github/users/${username}/starred?per_page=100&sort=created`)
+        fetch(`/api/github/users/${username}/starred?per_page=100&sort=created`),
+        fetch(`/api/github/users/${username}/followers?per_page=50`),
+        fetch(`/api/github/users/${username}/following?per_page=50`),
+        fetch(`/api/github/users/${username}/orgs`),
+        fetch(`/api/github/users/${username}/events?per_page=30`)
       ])
 
       if (!userRes.ok) {
@@ -65,6 +79,10 @@ export default function GitHubProfile({ username }: Props) {
       const reposData = reposRes.ok ? await reposRes.json() : []
       const gistsData = gistsRes.ok ? await gistsRes.json() : []
       const starredData = starredRes.ok ? await starredRes.json() : []
+      const followersData = followersRes.ok ? await followersRes.json() : []
+      const followingData = followingRes.ok ? await followingRes.json() : []
+      const orgsData = orgsRes.ok ? await orgsRes.json() : []
+      const eventsData = eventsRes.ok ? await eventsRes.json() : []
 
       // Fetch languages for each repository
       const reposWithLanguages = await Promise.all(
@@ -116,10 +134,27 @@ export default function GitHubProfile({ username }: Props) {
         })
       )
 
+      console.log('API Responses:', {
+        followers: followersData.length,
+        following: followingData.length,
+        orgs: orgsData.length,
+        events: eventsData.length
+      })
+      console.log('Raw API Data:', {
+        followersData,
+        followingData,
+        orgsData,
+        eventsData
+      })
+
       setUser(userData)
       setRepos(reposWithLanguages)
       setGists(gistsData)
       setStarred(starredWithLanguages)
+      setFollowers(followersData)
+      setFollowing(followingData)
+      setOrgs(orgsData)
+      setEvents(eventsData)
     }
     catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -149,9 +184,12 @@ export default function GitHubProfile({ username }: Props) {
   return (
     <div className="space-y-8">
       <Profile user={user} />
+      <Followers followers={followers} following={following} />
+      <Organizations orgs={orgs} />
       <Repositories repos={repos} />
       <StarredRepos starred={starred} />
       <Gists gists={gists} />
+      <ContributionGraph events={events} />
     </div>
   )
 }
