@@ -19,7 +19,7 @@ export async function GET(
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'GitHub Profile App',
+          'User-Agent': 'GitHub Profile App'
         },
         next: { revalidate: 3600 }
       }
@@ -32,10 +32,10 @@ export async function GET(
       throw new Error(`GitHub API responded with ${response.status}`)
     }
 
-    const readme = await response.json()
-    return NextResponse.json(readme)
-  } catch (error) {
-    console.error('Error fetching README:', error)
+    const readme = await response.json();
+    return NextResponse.json(readme);
+  } 
+  catch {
     return NextResponse.json(
       { error: 'Failed to fetch README' },
       { status: 500 }

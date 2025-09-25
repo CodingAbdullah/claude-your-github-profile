@@ -18,7 +18,7 @@ export async function GET(
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'GitHub Profile App',
+          'User-Agent': 'GitHub Profile App'
         },
         next: { revalidate: 300 }
       }
@@ -33,8 +33,8 @@ export async function GET(
 
     const gists = await response.json()
     return NextResponse.json(gists)
-  } catch (error) {
-    console.error('Error fetching gists:', error)
+  } 
+  catch {
     return NextResponse.json(
       { error: 'Failed to fetch gists' },
       { status: 500 }

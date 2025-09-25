@@ -14,7 +14,7 @@ export async function GET(
     const response = await fetch(`https://api.github.com/users/${username}`, {
       headers: {
         'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'GitHub Profile App',
+        'User-Agent': 'GitHub Profile App'
       },
       next: { revalidate: 300 }
     })
@@ -28,8 +28,8 @@ export async function GET(
 
     const userData = await response.json()
     return NextResponse.json(userData)
-  } catch (error) {
-    console.error('Error fetching GitHub user:', error)
+  } 
+  catch {
     return NextResponse.json(
       { error: 'Failed to fetch user data' },
       { status: 500 }

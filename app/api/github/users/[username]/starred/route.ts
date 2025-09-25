@@ -19,7 +19,7 @@ export async function GET(
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'GitHub Profile App',
+          'User-Agent': 'GitHub Profile App'
         },
         next: { revalidate: 300 }
       }
@@ -34,8 +34,8 @@ export async function GET(
 
     const starred = await response.json()
     return NextResponse.json(starred)
-  } catch (error) {
-    console.error('Error fetching starred repos:', error)
+  } 
+  catch {
     return NextResponse.json(
       { error: 'Failed to fetch starred repositories' },
       { status: 500 }

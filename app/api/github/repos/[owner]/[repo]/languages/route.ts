@@ -19,7 +19,7 @@ export async function GET(
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'GitHub Profile App',
+          'User-Agent': 'GitHub Profile App'
         },
         next: { revalidate: 3600 }
       }
@@ -32,10 +32,10 @@ export async function GET(
       throw new Error(`GitHub API responded with ${response.status}`)
     }
 
-    const languages = await response.json()
-    return NextResponse.json(languages)
-  } catch (error) {
-    console.error('Error fetching repo languages:', error)
+    const languages = await response.json();
+    return NextResponse.json(languages);
+  } 
+  catch {
     return NextResponse.json(
       { error: 'Failed to fetch repository languages' },
       { status: 500 }

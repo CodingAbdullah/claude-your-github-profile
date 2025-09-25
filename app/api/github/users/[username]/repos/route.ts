@@ -19,7 +19,7 @@ export async function GET(
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'GitHub Profile App',
+          'User-Agent': 'GitHub Profile App'
         },
         next: { revalidate: 300 }
       }
