@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import GitHubGist from '../utils/types/GitHubGist'
 
+// Gists Custom Component
 export default function Gists({ gists }: { gists: GitHubGist[] }) {
   const [isExpanded, setIsExpanded] = useState(true)
 

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+// Not Found Page Component
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 sm:p-6">

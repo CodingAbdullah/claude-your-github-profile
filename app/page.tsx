@@ -8,21 +8,21 @@ import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage,
+  FormMessage
 } from '@/components/ui/form'
 
+// Setting the form username criteria
 const formSchema = z.object({
-  username: z.string().min(1, 'Username is required').min(2, 'Username must be at least 2 characters'),
+  username: z.string().min(1, 'Username is required').min(2, 'Username must be at least 2 characters')
 })
 
+// Home Page Component
 export default function Home() {
   const [loading, setLoading] = useState(false)
   const [displayText, setDisplayText] = useState('')
@@ -32,10 +32,11 @@ export default function Home() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: '',
+      username: ''
     },
   })
 
+  // Gradually displaying title text
   useEffect(() => {
     let currentIndex = 0
     const typingInterval = setInterval(() => {
@@ -92,9 +93,6 @@ export default function Home() {
                   name="username"
                   render={({ field }) => (
                     <FormItem className="text-center">
-                      <FormLabel className="text-gray-300 text-base sm:text-lg font-semibold">
-                        GitHub Username
-                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}

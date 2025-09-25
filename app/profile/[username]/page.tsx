@@ -9,6 +9,7 @@ interface Props {
   params: Promise<{ username: string }>
 }
 
+// Profile Page Component
 export default function ProfilePage({ params }: Props) {
   const resolvedParams = use(params)
   const { username } = resolvedParams

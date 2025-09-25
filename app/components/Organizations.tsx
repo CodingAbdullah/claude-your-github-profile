@@ -6,8 +6,6 @@ import GitHubOrganization from '../utils/types/GitHubOrganization'
 export default function Organizations({ orgs }: { orgs: GitHubOrganization[] }) {
   const [isExpanded, setIsExpanded] = useState(true)
 
-  // Always show the component, even if empty
-
   return (
     <div className="px-2">
       <div className="flex justify-center items-center mb-3 sm:mb-4">

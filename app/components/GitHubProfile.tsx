@@ -15,6 +15,8 @@ import StarredRepos from './StarredRepos'
 import Followers from './Followers'
 import Organizations from './Organizations'
 import ContributionGraph from './ContributionGraph'
+import ContributionCalendar from './ContributionCalendar'
+import ContributionCalendarType from '../utils/types/ContributionCalendar'
 
 // Helper function to calculate language percentages
 const calculateLanguagePercentages = (languages: Record<string, number>): string => {
@@ -39,6 +41,7 @@ export default function GitHubProfile({ username }: Props) {
   const [following, setFollowing] = useState<GitHubFollower[]>([])
   const [orgs, setOrgs] = useState<GitHubOrganization[]>([])
   const [events, setEvents] = useState<GitHubEvent[]>([])
+  const [contributionCalendar, setContributionCalendar] = useState<ContributionCalendarType | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,7 +54,7 @@ export default function GitHubProfile({ username }: Props) {
     setError(null)
 
     try {
-      const [userRes, reposRes, gistsRes, starredRes, followersRes, followingRes, orgsRes, eventsRes] = await Promise.all([
+      const [userRes, reposRes, gistsRes, starredRes, followersRes, followingRes, orgsRes, eventsRes, contributionsRes] = await Promise.all([
         fetch(`/api/github/users/${username}`),
         fetch(`/api/github/users/${username}/repos?per_page=100&sort=updated`),
         fetch(`/api/github/users/${username}/gists?per_page=100`),
@@ -59,7 +62,8 @@ export default function GitHubProfile({ username }: Props) {
         fetch(`/api/github/users/${username}/followers?per_page=50`),
         fetch(`/api/github/users/${username}/following?per_page=50`),
         fetch(`/api/github/users/${username}/orgs`),
-        fetch(`/api/github/users/${username}/events?per_page=30`)
+        fetch(`/api/github/users/${username}/events?per_page=30`),
+        fetch(`/api/github/users/${username}/contributions`)
       ])
 
       if (!userRes.ok) {
@@ -75,6 +79,7 @@ export default function GitHubProfile({ username }: Props) {
         throw new Error('Failed to fetch starred repositories')
       }
 
+      // Evaluate all calls and parse JSON
       const userData = await userRes.json()
       const reposData = reposRes.ok ? await reposRes.json() : []
       const gistsData = gistsRes.ok ? await gistsRes.json() : []
@@ -83,6 +88,7 @@ export default function GitHubProfile({ username }: Props) {
       const followingData = followingRes.ok ? await followingRes.json() : []
       const orgsData = orgsRes.ok ? await orgsRes.json() : []
       const eventsData = eventsRes.ok ? await eventsRes.json() : []
+      const contributionsData = contributionsRes.ok ? await contributionsRes.json() : null
 
       // Fetch languages for each repository
       const reposWithLanguages = await Promise.all(
@@ -134,19 +140,6 @@ export default function GitHubProfile({ username }: Props) {
         })
       )
 
-      console.log('API Responses:', {
-        followers: followersData.length,
-        following: followingData.length,
-        orgs: orgsData.length,
-        events: eventsData.length
-      })
-      console.log('Raw API Data:', {
-        followersData,
-        followingData,
-        orgsData,
-        eventsData
-      })
-
       setUser(userData)
       setRepos(reposWithLanguages)
       setGists(gistsData)
@@ -155,6 +148,7 @@ export default function GitHubProfile({ username }: Props) {
       setFollowing(followingData)
       setOrgs(orgsData)
       setEvents(eventsData)
+      setContributionCalendar(contributionsData)
     }
     catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -184,6 +178,7 @@ export default function GitHubProfile({ username }: Props) {
   return (
     <div className="space-y-8">
       <Profile user={user} />
+      <ContributionCalendar contributionCalendar={contributionCalendar} />
       <Followers followers={followers} following={following} />
       <Organizations orgs={orgs} />
       <Repositories repos={repos} />

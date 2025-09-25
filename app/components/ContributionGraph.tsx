@@ -5,11 +5,6 @@ import GitHubEvent from '../utils/types/GitHubEvent'
 export default function ContributionGraph({ events }: { events: GitHubEvent[] }) {
   const [isExpanded, setIsExpanded] = useState(true)
 
-  console.log('ContributionGraph - received events:', {
-    count: events?.length || 0,
-    events: events
-  })
-
   const formatEventType = (type: string) => {
     switch (type) {
       case 'PushEvent': return 'PUSHED'
