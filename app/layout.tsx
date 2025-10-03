@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata, Viewport } from 'next'
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: 'GitHub Profile Terminal',
@@ -19,6 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <Analytics />
       <body className="dark">{children}</body>
     </html>
   )
