@@ -13,6 +13,13 @@ export async function GET(
     return NextResponse.json({ error: 'Username is required' }, { status: 400 })
   }
 
+  if (!process.env.GITHUB_AUTH_TOKEN) {
+    return NextResponse.json(
+      { error: 'GitHub authentication token is not configured. Please add GITHUB_AUTH_TOKEN to your environment secrets.' },
+      { status: 500 }
+    )
+  }
+
   try {
     const now = new Date()
     const from = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).toISOString()

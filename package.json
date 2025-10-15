@@ -4,9 +4,9 @@
   "description": "An easy site build using Claude Code, Next.js, and the GitHub API. Do not ask me, try it yoself!!",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 5000 -H 0.0.0.0",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 5000 -H 0.0.0.0",
     "lint": "next lint"
   },
   "repository": {
